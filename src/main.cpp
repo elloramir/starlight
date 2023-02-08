@@ -1,5 +1,6 @@
 #include "gfx/shader.hpp"
 
+#include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <inttypes.h>
@@ -20,6 +21,9 @@ int main(void)
 
 	glfwMakeContextCurrent(window);
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+	std::cout << "OpenGL loaded" << std::endl;
+	std::cout << "Version: " << glGetString(GL_VERSION) << std::endl;
 
 	Shader shader;
 	shader.compile(
