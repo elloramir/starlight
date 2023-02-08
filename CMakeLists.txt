@@ -37,9 +37,3 @@ target_include_directories(
 	${GLM_INCLUDE}
 	${GLAD_INCLUDE}
 	${GLFW_INCLUDE})
-
-target_compile_definitions(${PROJECT} PRIVATE
-    $<$<CONFIG:Debug>:
-        FOOBAR_DEBUG=1
-    >
-)
