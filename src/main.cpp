@@ -1,4 +1,5 @@
 #include "gfx/shader.hpp"
+#include "gfx/texture.hpp"
 
 #include <iostream>
 #include <glad/glad.h>
@@ -29,24 +30,33 @@ int main(void)
 	shader.compile(
 		"#version 330\n"
 		"layout(location=0) in vec3 a_position;"
+		"layout(location=1) in vec2 a_uv;"
+		"out vec2 v_uv;"
 		"void main() {"
+		"v_uv = a_uv.xy;"
 		"gl_Position = vec4(a_position.xyz, 1.0);"
 		"}",
 
 		"#version 330\n"
 		"out vec4 v_color;"
+		"in vec2 v_uv;"
+		"uniform sampler2D v_tex;"
 		"void main() {"
-		"v_color = vec4(1.0, 0.4, 0.2, 1.0);"
+		"v_color = texture(v_tex, v_uv) * vec4(1.0, 1.0, 1.0, 1.0);"
 		"}"
 	);
+
+	Texture tex;
+	uint8_t data[] = { 0xff, 0x00, 0xff, 0xff };
+	tex.load(1, 1, data);
 
 	uint32_t vao, vbo, ebo;
 
 	float vertices[] = {
-		 0.5f,  0.5f, 0.0f,  // top right
-		 0.5f, -0.5f, 0.0f,  // bottom right
-		-0.5f, -0.5f, 0.0f,  // bottom left
-		-0.5f,  0.5f, 0.0f   // top left 
+		 0.5f,  0.5f, 0.0f,  1.f, 0.f, // top right
+		 0.5f, -0.5f, 0.0f,  1.f, 1.f, // bottom right
+		-0.5f, -0.5f, 0.0f,  0.f, 1.f, // bottom left
+		-0.5f,  0.5f, 0.0f,  0.f, 0.f, // top left 
 	};
 
 	uint32_t indices[] = {
@@ -62,14 +72,19 @@ int main(void)
 	
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(sizeof(float) * 3));
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	while (!glfwWindowShouldClose(window))
 	{
+		glViewport(0, 0, 640, 480);
 		glClearColor(0.3f, 0.1f, 0.0f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glUseProgram(shader.id);

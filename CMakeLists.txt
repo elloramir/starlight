@@ -22,6 +22,7 @@ list(APPEND libs glad)
 add_executable(
 	${PROJECT}
 	src/gfx/shader.cpp
+	src/gfx/texture.cpp
 	src/main.cpp)
 target_link_libraries(${PROJECT} ${libs})
 target_include_directories(
