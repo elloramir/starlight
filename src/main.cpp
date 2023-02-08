@@ -1,3 +1,5 @@
+#include "gfx/shader.hpp"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <inttypes.h>
@@ -18,6 +20,21 @@ int main(void)
 
 	glfwMakeContextCurrent(window);
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+	Shader shader;
+	shader.compile(
+		"#version 330\n"
+		"layout(location=0) in vec3 a_position;"
+		"void main() {"
+		"gl_Position = vec4(a_position.xyz, 1.0);"
+		"}",
+
+		"#version 330\n"
+		"out vec4 v_color;"
+		"void main() {"
+		"v_color = vec4(1.0, 0.4, 0.2, 1.0);"
+		"}"
+	);
 
 	uint32_t vao, vbo, ebo;
 
@@ -51,6 +68,7 @@ int main(void)
 	{
 		glClearColor(0.3f, 0.1f, 0.0f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT);
+		glUseProgram(shader.id);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);

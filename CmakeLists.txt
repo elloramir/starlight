@@ -19,7 +19,10 @@ target_include_directories(glad PRIVATE ${GLAD_INCLUDE})
 list(APPEND libs glad)
 
 # program
-add_executable(${PROJECT} src/main.cpp)
+add_executable(
+	${PROJECT}
+	src/gfx/shader.cpp
+	src/main.cpp)
 target_link_libraries(${PROJECT} ${libs})
 target_include_directories(
 	${PROJECT} PRIVATE
