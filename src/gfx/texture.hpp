@@ -10,5 +10,6 @@ public:
 
 	// NOTE(elloramir): it expects RGBA data
 	void load(int32_t width, int32_t height, const uint8_t *data);
+	void load_from_file(const char *path);
 	void unload();
 };

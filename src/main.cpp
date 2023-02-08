@@ -47,8 +47,7 @@ int main(void)
 	);
 
 	Texture tex;
-	uint8_t data[] = { 0xff, 0x00, 0xff, 0xff };
-	tex.load(1, 1, data);
+	tex.load_from_file("cat.jpg");
 
 	uint32_t vao, vbo, ebo;
 

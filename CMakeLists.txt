@@ -18,6 +18,12 @@ set(GLAD_INCLUDE libs/glad/include)
 target_include_directories(glad PRIVATE ${GLAD_INCLUDE})
 list(APPEND libs glad)
 
+# STB
+set(STB_INCLUDE libs/stb)
+
+# GLM
+set(GLM_INCLUDE libs/glm)
+
 # program
 add_executable(
 	${PROJECT}
@@ -27,5 +33,13 @@ add_executable(
 target_link_libraries(${PROJECT} ${libs})
 target_include_directories(
 	${PROJECT} PRIVATE
+	${STB_INCLUDE}
+	${GLM_INCLUDE}
 	${GLAD_INCLUDE}
 	${GLFW_INCLUDE})
+
+target_compile_definitions(${PROJECT} PRIVATE
+    $<$<CONFIG:Debug>:
+        FOOBAR_DEBUG=1
+    >
+)
