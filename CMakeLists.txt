@@ -18,6 +18,20 @@ set(GLAD_INCLUDE libs/glad/include)
 target_include_directories(glad PRIVATE ${GLAD_INCLUDE})
 list(APPEND libs glad)
 
+# DearImgui
+set(IMGUI_INCLUDE libs/imgui/ libs/imgui/backends)
+add_library(imgui
+	libs/imgui/imgui.cpp
+	libs/imgui/imgui_demo.cpp
+	libs/imgui/imgui_draw.cpp
+	libs/imgui/imgui_tables.cpp
+	libs/imgui/imgui_widgets.cpp
+	libs/imgui/backends/imgui_impl_opengl3.cpp
+	libs/imgui/backends/imgui_impl_glfw.cpp)
+target_include_directories(imgui PRIVATE ${GLFW_INCLUDE} ${IMGUI_INCLUDE})
+target_link_libraries(imgui glfw)
+list(APPEND libs imgui)
+
 # STB
 set(STB_INCLUDE libs/stb)
 
@@ -33,6 +47,7 @@ add_executable(
 target_link_libraries(${PROJECT} ${libs})
 target_include_directories(
 	${PROJECT} PRIVATE
+	${IMGUI_INCLUDE}
 	${STB_INCLUDE}
 	${GLM_INCLUDE}
 	${GLAD_INCLUDE}

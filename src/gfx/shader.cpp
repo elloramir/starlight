@@ -47,3 +47,9 @@ void Shader::unload()
 {
 	glDeleteProgram(id);
 }
+
+void Shader::send_mat4(const char* name, glm::mat4x4 mat)
+{
+	glUseProgram(id);
+	glUniformMatrix4fv(glGetUniformLocation(id, name), 1, GL_FALSE, &mat[0][0]);
+}
