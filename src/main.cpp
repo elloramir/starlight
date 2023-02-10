@@ -1,5 +1,6 @@
 #include "gfx/shader.hpp"
 #include "gfx/texture.hpp"
+#include "core/camera.hpp"
 
 #include <iostream>
 #include <glad/glad.h>
@@ -13,6 +14,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
 
 int main(void)
 {
@@ -173,13 +175,11 @@ int main(void)
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// camera stuff
-	auto view = glm::mat4(1.0f);
-	auto model = glm::mat4(1.0f);
-	auto view_trans = glm::vec3(0.f, 0.f, -2.8f);
-	glm::mat4 projection;
-	float cam_degs = 0.f;
 	float perspective_fov = 45.f;
+	float model_degs = 0.f;
 
+	Camera camera;
+	camera.position = glm::vec3(0.f, 0.f, 2.0f);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -187,18 +187,18 @@ int main(void)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::SliderFloat("model - rotate", &cam_degs, 0.0f, 360.0f, "degs: %.1f");
-		ImGui::SliderFloat("perspective - fov", &perspective_fov, 0.0f, 360.0f, "degs: %.1f");
-		ImGui::SliderFloat3("view - trans", &view_trans[0], -10.0f, 10.0f, "%.1f");
+		ImGui::SliderFloat("model - rotate", &model_degs, 0.0f, 360.0f, "degs: %.1f");
+		ImGui::SliderFloat("fov", &camera.fov, 0.0f, 360.0f, "degs: %.1f");
+
+		ImGui::SliderFloat3("camera position", &camera.position[0], -10.f, 10.f, "%0.1f");
+		ImGui::SliderFloat3("camera orientation", &camera.orientation[0], -10.f, 10.f, "%0.1f");
 
 		// update game
-		model = glm::rotate(glm::mat4(1), glm::radians(cam_degs), glm::vec3(1.0f, 1.0f, 0.0f));
-		view = glm::translate(glm::mat4(1), view_trans); 
-		projection = glm::perspective(glm::radians(perspective_fov), (float)screen_width / (float)screen_height, 0.1f, 100.0f);
+		auto model = glm::rotate(glm::mat4(1), glm::radians(model_degs), glm::vec3(1.0f, 1.0f, 0.0f));
 
 		shader.send_mat4("i_model", model);
-		shader.send_mat4("i_view", view);
-		shader.send_mat4("i_proj",projection);
+		shader.send_mat4("i_view", camera.get_view());
+		shader.send_mat4("i_proj", camera.get_proj());
 
 		glEnable(GL_DEPTH_TEST);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
