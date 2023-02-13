@@ -11,7 +11,8 @@ public:
 	void compile(const char *vs_src, const char *fs_src);
 	void unload();
 
-	void send_mat4(const char* name, glm::mat4x4 mat);
+	void send_mat4(const char *name, glm::mat4 mat);
+	void send_vec4(const char *name, glm::vec4 vec);
 
 private:
 	uint32_t vs_id, fs_id; // TODO(elloramir): hot reloader

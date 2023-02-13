@@ -3,12 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 set(PROJECT starlight)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-if(WIN32)
-set(lib opengl32)
-else()
-set(lib GL)
-endif(WIN32)
+set(lib OpenGL32)
 
 project(${PROJECT})
 
@@ -48,7 +43,6 @@ add_executable(
 	${PROJECT}
 	src/gfx/shader.cpp
 	src/gfx/texture.cpp
-	src/core/camera.cpp
 	src/main.cpp)
 target_link_libraries(${PROJECT} ${lib})
 target_include_directories(

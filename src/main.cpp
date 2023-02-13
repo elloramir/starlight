@@ -1,6 +1,5 @@
 #include "gfx/shader.hpp"
 #include "gfx/texture.hpp"
-#include "core/camera.hpp"
 
 #include <iostream>
 #include <glad/glad.h>
@@ -13,8 +12,6 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 
 int main(void)
 {
@@ -71,94 +68,68 @@ int main(void)
 		"#version 330\n"
 		"out vec4 v_color;"
 		"in vec2 v_uv;"
+		"uniform vec4 light_color;"
+		"uniform vec4 object_color;"
 		"uniform sampler2D v_tex;"
 		"void main() {"
-		"v_color = texture(v_tex, v_uv) * vec4(1.0, 1.0, 1.0, 1.0);"
+		"float ambient_strength = 1.0;"
+		"vec4 ambient = object_color * ambient_strength;"
+		"vec4 result = ambient * object_color;"
+		"v_color = texture(v_tex, v_uv) * result;"
 		"}"
 	);
 
 	Texture tex;
 	tex.load_from_file("res/cat.jpg");
 
-	uint32_t vao, vbo, ebo;
+	uint32_t vao, vbo;
 
 	float vertices[] = {
-		//  0.5f,  0.5f, 0.5f,  1.f, 0.f, // top right
-		//  0.5f, -0.5f, 0.5f,  1.f, 1.f, // bottom right
-		// -0.5f, -0.5f, 0.5f,  0.f, 1.f, // bottom left
-		// -0.5f,  0.5f, 0.5f,  0.f, 0.f, // top left 
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-		//  0.5f,  0.5f, -0.5f,  0.f, 0.f, // top right
-		//  0.5f, -0.5f, -0.5f,  0.f, 1.f, // bottom right
-		// -0.5f, -0.5f, -0.5f,  1.f, 1.f, // bottom left
-		// -0.5f,  0.5f, -0.5f,  1.f, 0.f, // top left
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
 
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-	};
-
-	uint32_t indices[] = {
-		0, 1, 3,
-		1, 2, 3,
-
-		4, 5, 7,
-		5, 6, 7,
-
-		0, 3, 4,
-		3, 7, 4,
-
-		1, 5, 2,
-		5, 6, 2,
-
-		0, 4, 1,
-		4, 5, 1,
-
-		3, 2, 7,
-		2, 6, 7
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
 	};
 
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
-	glGenBuffers(1, &ebo);
 
 	glBindVertexArray(vao);
 	
@@ -166,20 +137,10 @@ int main(void)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
 
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(sizeof(float) * 3));
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	// camera stuff
-	float perspective_fov = 45.f;
-	float model_degs = 0.f;
-
-	Camera camera;
-	camera.position = glm::vec3(0.f, 0.f, 2.0f);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void*)(sizeof(float) * 3));
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -187,26 +148,35 @@ int main(void)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::SliderFloat("model - rotate", &model_degs, 0.0f, 360.0f, "degs: %.1f");
-		ImGui::SliderFloat("fov", &camera.fov, 0.0f, 360.0f, "degs: %.1f");
+		// rotation
+		static float model_rot[3] = { 0 };
+		ImGui::SliderFloat3("Rotation", model_rot, 0.f, 360.f, "%2.f");
 
-		ImGui::SliderFloat3("camera position", &camera.position[0], -10.f, 10.f, "%0.1f");
-		ImGui::SliderFloat3("camera orientation", &camera.orientation[0], -10.f, 10.f, "%0.1f");
+		// light
+		static glm::vec4 objec_color = { 1.f, 0.2f, 0.1f, 1.f };
+		static glm::vec4 light_color = { 0.2f, 1.f, 0.3f, 1.f };
+		ImGui::SliderFloat4("Object color", &objec_color[0], 0.f, 1.f);
+		ImGui::SliderFloat4("Light color", &light_color[0], 0.f, 1.f);
 
-		// update game
-		auto model = glm::rotate(glm::mat4(1), glm::radians(model_degs), glm::vec3(1.0f, 1.0f, 0.0f));
+
+		auto model = glm::mat4(1.f);
+		model = glm::rotate(model, glm::radians(model_rot[0]), glm::vec3(1.f, 0.f, 0.f));
+		model = glm::rotate(model, glm::radians(model_rot[1]), glm::vec3(0.f, 1.f, 0.f));
+		model = glm::rotate(model, glm::radians(model_rot[2]), glm::vec3(0.f, 0.f, 1.f));
+
+		shader.send_vec4("object_color", objec_color);
+		shader.send_vec4("light_color", light_color);
 
 		shader.send_mat4("i_model", model);
-		shader.send_mat4("i_view", camera.get_view());
-		shader.send_mat4("i_proj", camera.get_proj());
+		shader.send_mat4("i_view", glm::mat4(1.f));
+		shader.send_mat4("i_proj", glm::mat4(1.f));
 
 		glEnable(GL_DEPTH_TEST);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glViewport(0, 0, screen_width, screen_height);
 		glClearColor(0.3f, 0.1f, 0.0f, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		glUseProgram(shader.id);
-		// glDrawElements(GL_TRIANGLES, 6 * 6, GL_UNSIGNED_INT, 0);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		ImGui::Render();
